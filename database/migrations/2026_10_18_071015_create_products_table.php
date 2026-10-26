@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -18,12 +17,14 @@ return new class extends Migration
             // Relasi ke tabel categories
             $table->foreignId('category_id')
                 ->constrained()
-                ->onDelete('cascade');
+                ->cascadeOnDelete();
 
             // Informasi produk
+            $table->string('sku')->unique();
             $table->string('name');
-            $table->integer('stock');
-            $table->decimal('price', 12, 2);
+            $table->integer('stock')->default(0);
+            $table->integer('minimum_stock')->default(5);
+            $table->decimal('price', 12, 2)->default(0);
 
             $table->timestamps();
         });

@@ -1,409 +1,344 @@
 
 @extends('layouts.app')
 
+@section('title', 'Daftar Produk - Tasya Mart')
+
 @section('content')
 <style>
-    * {
-        box-sizing: border-box;
-    }
-
-    .product-page {
+    .products-page {
+        color: #49372b;
         width: 100%;
-        max-width: 1250px;
-        margin: 0 auto;
-        padding: 30px 20px;
-        color: #263746;
-        font-family: Arial, sans-serif;
     }
 
-    .page-header {
+    .products-heading {
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        align-items: center;
         flex-wrap: wrap;
-        gap: 16px;
+        gap: 15px;
         margin-bottom: 24px;
     }
 
-    .page-header h1 {
+    .products-heading h1 {
         margin: 0 0 8px;
-        color: #34465a;
         font-size: 28px;
+        color: #5b4032;
     }
 
-    .page-header p {
+    .products-heading p {
         margin: 0;
-        color: #718096;
-        font-size: 14px;
+        color: #887665;
+        line-height: 1.6;
     }
 
-    /* Panel pencarian: setiap elemen memiliki kolom tersendiri */
-    .filter-panel {
-        display: grid;
-        grid-template-columns:
-            minmax(0, 1.25fr)
-            minmax(0, 1fr)
-            auto
-            auto;
-        align-items: end;
-        gap: 14px;
-        width: 100%;
-        padding: 20px;
-        margin-bottom: 20px;
-        border: 1px solid #dce4ec;
-        border-radius: 12px;
-        background: #fff;
-    }
-
-    .filter-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        min-width: 0;
-        width: 100%;
-    }
-
-    .filter-group label {
-        display: block;
-        margin: 0;
-        color: #475569;
-        font-size: 12px;
-        font-weight: bold;
-    }
-
-    .filter-group input,
-    .filter-group select {
-        display: block;
-        width: 100%;
-        min-width: 0;
-        min-height: 44px;
-        margin: 0;
-        padding: 10px 12px;
-        border: 1px solid #cbd5e1;
+    .tm-button {
+        display: inline-block;
+        border: none;
         border-radius: 8px;
-        background: #f8fafc;
-        color: #334155;
-        font-family: inherit;
+        padding: 10px 15px;
+        text-decoration: none;
         font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background .2s, transform .2s;
+    }
+
+    .tm-button:hover {
+        transform: translateY(-1px);
+    }
+
+    .tm-primary {
+        background: #76513d;
+        color: #fffaf2;
+    }
+
+    .tm-primary:hover {
+        background: #5b4032;
+        color: #fffaf2;
+    }
+
+    .tm-secondary {
+        background: #eee3d1;
+        color: #5b4032;
+    }
+
+    .tm-secondary:hover {
+        background: #e3d1b8;
+        color: #49372b;
+    }
+
+    .tm-danger {
+        background: #f5e0d9;
+        color: #963f2d;
+    }
+
+    .tm-danger:hover {
+        background: #edc9bd;
+        color: #7c3022;
+    }
+
+    .tm-alert {
+        margin-bottom: 18px;
+        padding: 14px 17px;
+        border-radius: 9px;
+        line-height: 1.6;
+    }
+
+    .tm-success {
+        background: #e5efdf;
+        color: #355b35;
+        border: 1px solid #c8ddbe;
+    }
+
+    .tm-error {
+        background: #f5e0d9;
+        color: #963f2d;
+        border: 1px solid #e8c5b9;
+    }
+
+    .tm-error ul {
+        margin: 8px 0 0;
+        padding-left: 22px;
+    }
+
+    .tm-summary {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 22px;
+    }
+
+    .tm-summary-card {
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #eadcc8;
+        background: #faf5eb;
+    }
+
+    .tm-summary-label {
+        font-size: 13px;
+        color: #887665;
+        margin-bottom: 10px;
+    }
+
+    .tm-summary-number {
+        font-size: 25px;
+        font-weight: bold;
+        color: #5b4032;
+    }
+
+    .tm-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 22px;
+        padding: 18px;
+        background: #faf5eb;
+        border: 1px solid #eadcc8;
+        border-radius: 10px;
+    }
+
+    .tm-filters input,
+    .tm-filters select {
+        flex: 1;
+        min-width: 170px;
+        padding: 11px 12px;
+        border: 1px solid #d9c8b3;
+        border-radius: 7px;
+        background: #fffdf8;
+        color: #49372b;
+        font-size: 14px;
         outline: none;
     }
 
-    .filter-group input:focus,
-    .filter-group select:focus {
-        border-color: #647f9e;
-        box-shadow: 0 0 0 3px rgba(100, 127, 158, .12);
+    .tm-filters input:focus,
+    .tm-filters select:focus {
+        border-color: #987252;
+        box-shadow: 0 0 0 3px rgba(118, 81, 61, .10);
     }
 
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-        min-height: 40px;
-        padding: 10px 14px;
-        border: none;
-        border-radius: 7px;
-        background: #455a70;
-        color: #fff;
-        font-family: inherit;
-        font-size: 12px;
-        font-weight: bold;
-        text-decoration: none;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background .2s;
+    .tm-table-card {
+        background: #fffdf8;
+        border: 1px solid #eadcc8;
+        border-radius: 12px;
+        overflow: hidden;
     }
 
-    .btn:hover {
-        background: #34465a;
-    }
-
-    .btn-primary {
-        background: #455a70;
-        color: #fff;
-    }
-
-    .btn-primary:hover {
-        background: #34465a;
-    }
-
-    .btn-light {
-        background: #e2e8f0;
-        color: #334155;
-    }
-
-    .btn-light:hover {
-        background: #cbd5e1;
-    }
-
-    .btn-edit {
-        background: #64748b;
-        color: #fff;
-    }
-
-    .btn-edit:hover {
-        background: #475569;
-    }
-
-    .btn-delete {
-        background: #dc2626;
-        color: #fff;
-    }
-
-    .btn-delete:hover {
-        background: #b91c1c;
-    }
-
-    .alert {
-        padding: 13px 16px;
-        margin-bottom: 18px;
-        border-radius: 8px;
-        font-size: 13px;
-    }
-
-    .alert-success {
-        border: 1px solid #bbf7d0;
-        background: #f0fdf4;
-        color: #166534;
-    }
-
-    .alert-error {
-        border: 1px solid #fecaca;
-        background: #fef2f2;
-        color: #991b1b;
-    }
-
-    .error-list {
-        margin: 8px 0 0;
-        padding-left: 20px;
-    }
-
-    .summary {
+    .tm-table-top {
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        align-items: center;
         flex-wrap: wrap;
         gap: 10px;
-        padding: 18px 20px;
-        border: 1px solid #dce4ec;
-        border-radius: 12px 12px 0 0;
-        background: #fff;
+        padding: 20px;
+        border-bottom: 1px solid #eee5d8;
     }
 
-    .summary h2 {
-        margin: 0 0 5px;
-        color: #34465a;
-        font-size: 17px;
-    }
-
-    .summary p {
+    .tm-table-top h2 {
         margin: 0;
-        color: #718096;
-        font-size: 12px;
+        font-size: 19px;
+        color: #5b4032;
     }
 
-    .count-badge {
-        padding: 7px 12px;
-        border-radius: 20px;
-        background: #eaf0f5;
-        color: #34465a;
-        font-size: 12px;
-        font-weight: bold;
-        white-space: nowrap;
-    }
-
-    .table-wrapper {
-        width: 100%;
-        overflow-x: auto;
-        border: 1px solid #dce4ec;
-        border-top: 0;
-        border-radius: 0 0 12px 12px;
-        background: #fff;
-    }
-
-    .product-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .product-table th {
-        padding: 14px;
-        background: #34465a;
-        color: #fff;
-        text-align: left;
-        font-size: 11px;
-        text-transform: uppercase;
-        white-space: nowrap;
-    }
-
-    .product-table td {
-        padding: 14px;
-        border-bottom: 1px solid #e2e8f0;
-        color: #475569;
-        text-align: left;
-        vertical-align: middle;
+    .tm-table-top p {
+        margin: 6px 0 0;
+        color: #887665;
         font-size: 13px;
     }
 
-    .product-table tbody tr:hover {
-        background: #f8fafc;
+    .tm-table-wrap {
+        overflow-x: auto;
+        width: 100%;
     }
 
-    .product-table tbody tr:last-child td {
-        border-bottom: 0;
+    .tm-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 850px;
     }
 
-    .product-name {
-        min-width: 140px;
-        color: #1e293b !important;
-        font-weight: bold;
-    }
-
-    .sku {
-        display: inline-block;
-        padding: 5px 8px;
-        border-radius: 6px;
-        background: #f1f5f9;
-        color: #475569;
+    .tm-table th {
+        padding: 14px 12px;
+        text-align: left;
+        background: #eee3d1;
+        color: #5b4032;
+        font-size: 12px;
         white-space: nowrap;
     }
 
-    .price {
-        color: #34465a;
-        font-weight: bold;
-        white-space: nowrap;
+    .tm-table td {
+        padding: 14px 12px;
+        border-bottom: 1px solid #eee5d8;
+        font-size: 13px;
+        vertical-align: middle;
     }
 
-    .stock-badge,
-    .status-badge {
+    .tm-table tbody tr:hover {
+        background: #fdf9f1;
+    }
+
+    .tm-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .tm-product-name {
+        color: #49372b;
+        font-weight: bold;
+    }
+
+    .tm-sku {
+        color: #887665;
+        font-size: 12px;
+    }
+
+    .tm-badge {
         display: inline-block;
-        padding: 6px 9px;
+        padding: 6px 10px;
         border-radius: 20px;
+        background: #eee3d1;
+        color: #674932;
         font-size: 11px;
         font-weight: bold;
         white-space: nowrap;
     }
 
-    .stock-normal,
-    .status-normal {
-        background: #dcfce7;
-        color: #166534;
+    .tm-low-stock {
+        background: #f5e0d9;
+        color: #963f2d;
     }
 
-    .stock-low,
-    .status-low {
-        background: #fef2f2;
-        color: #b91c1c;
-    }
-
-    .action-buttons {
+    .tm-actions {
         display: flex;
-        align-items: center;
         flex-wrap: wrap;
+        align-items: center;
         gap: 6px;
     }
 
-    .action-buttons form {
+    .tm-actions form {
         margin: 0;
     }
 
-    .empty-state {
-        padding: 40px 20px !important;
-        color: #718096 !important;
-        text-align: center !important;
+    .tm-empty {
+        text-align: center;
+        padding: 38px 15px !important;
+        color: #887665;
+        line-height: 1.8;
     }
 
-    .pagination-wrapper {
-        padding: 18px 20px;
-        border-top: 1px solid #e2e8f0;
-        background: #fff;
+    .tm-pagination {
+        padding: 18px;
+        border-top: 1px solid #eee5d8;
+        overflow-x: auto;
     }
 
-    .pagination-info {
-        margin-bottom: 12px;
-        color: #718096;
-        font-size: 12px;
+    .tm-count {
+        color: #887665;
+        font-size: 13px;
     }
 
-    @media (max-width: 900px) {
-        .filter-panel {
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        }
-
-        .filter-panel .btn {
-            width: 100%;
-        }
+    .tm-pagination nav p {
+        color: #887665;
+        font-size: 13px;
     }
 
-    @media (max-width: 600px) {
-        .product-page {
-            padding: 20px 10px;
-        }
-
-        .page-header {
-            align-items: flex-start;
-            flex-direction: column;
-        }
-
-        .page-header h1 {
+    @media (max-width: 768px) {
+        .products-heading h1 {
             font-size: 24px;
         }
 
-        .filter-panel {
-            grid-template-columns: minmax(0, 1fr);
-            gap: 14px;
-            padding: 15px;
+        .tm-summary {
+            grid-template-columns: 1fr;
         }
 
-        .filter-group {
-            width: 100%;
+        .tm-filters {
+            padding: 14px;
         }
 
-        .filter-panel .btn {
-            width: 100%;
+        .tm-filters input,
+        .tm-filters select {
+            flex-basis: 100%;
         }
 
-        .product-table th,
-        .product-table td {
-            padding: 12px;
+        .tm-table-top {
+            padding: 16px;
         }
     }
 </style>
 
-<div class="product-page">
+<div class="products-page">
 
-    {{-- Header halaman --}}
-    <header class="page-header">
+    {{-- Judul dan tombol tambah --}}
+    <div class="products-heading">
         <div>
             <h1>Daftar Produk</h1>
-            <p>Kelola produk dan pantau persediaan inventaris.</p>
+            <p>Kelola produk dan pantau persediaan Tasya Mart.</p>
         </div>
 
-        <a href="{{ route('products.create') }}" class="btn btn-primary">
+        <a href="{{ route('products.create') }}"
+           class="tm-button tm-primary">
             + Tambah Produk
         </a>
-    </header>
+    </div>
 
-    {{-- Notifikasi berhasil --}}
+    {{-- Notifikasi --}}
     @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
+        <div class="tm-alert tm-success">
+            ✓ {{ session('success') }}
         </div>
     @endif
 
-    {{-- Notifikasi gagal --}}
     @if (session('error'))
-        <div class="alert alert-error">
+        <div class="tm-alert tm-error">
             {{ session('error') }}
         </div>
     @endif
 
-    {{-- Pesan validasi --}}
     @if ($errors->any())
-        <div class="alert alert-error">
-            <strong>Periksa kembali data yang dimasukkan:</strong>
-
-            <ul class="error-list">
+        <div class="tm-alert tm-error">
+            <strong>Terjadi kesalahan:</strong>
+            <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -411,201 +346,205 @@
         </div>
     @endif
 
-    {{-- Form pencarian dan filter --}}
-    <form
-        method="GET"
-        action="{{ route('products.index') }}"
-        class="filter-panel"
-    >
-
-        <div class="filter-group">
-            <label for="search">Cari Produk</label>
-
-            <input
-                type="text"
-                id="search"
-                name="search"
-                value="{{ request('search') }}"
-                placeholder="Nama produk atau SKU..."
-            >
-        </div>
-
-        <div class="filter-group">
-            <label for="category_id">Kategori</label>
-
-            <select id="category_id" name="category_id">
-                <option value="">Semua Kategori</option>
-
-                @foreach ($categories as $category)
-                    <option
-                        value="{{ $category->id }}"
-                        @selected(
-                            (string) request('category_id') ===
-                            (string) $category->id
-                        )
-                    >
-                        {{ $category->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-
-        <button type="submit" class="btn">
-            Cari
-        </button>
-
-        <a href="{{ route('products.index') }}" class="btn btn-light">
-            Reset
-        </a>
-
-    </form>
-
-    {{-- Ringkasan jumlah produk --}}
-    <section class="summary">
-        <div>
-            <h2>Daftar Produk</h2>
-            <p>Informasi produk yang tersimpan di database.</p>
-        </div>
-
-        <span class="count-badge">
-            {{ $products->total() }} Produk
-        </span>
-    </section>
-
-    {{-- Tabel produk --}}
-    <div class="table-wrapper">
-
-        <table class="product-table">
-            <thead>
-                <tr>
-                    <th>No.</th>
-                    <th>SKU</th>
-                    <th>Nama Produk</th>
-                    <th>Kategori</th>
-                    <th>Harga</th>
-                    <th>Stok</th>
-                    <th>Stok Minimum</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @forelse ($products as $product)
-                    <tr>
-                        <td>
-                            {{ $products->firstItem() + $loop->index }}
-                        </td>
-
-                        <td>
-                            <span class="sku">
-                                {{ $product->sku ?: '-' }}
-                            </span>
-                        </td>
-
-                        <td class="product-name">
-                            {{ $product->name }}
-                        </td>
-
-                        <td>
-                            {{ $product->category?->name ?? '-' }}
-                        </td>
-
-                        <td class="price">
-                            Rp {{ number_format((float) $product->price, 0, ',', '.') }}
-                        </td>
-
-                        <td>
-                            @if ((int) $product->stock <= (int) $product->minimum_stock)
-                                <span class="stock-badge stock-low">
-                                    {{ number_format((int) $product->stock) }}
-                                </span>
-                            @else
-                                <span class="stock-badge stock-normal">
-                                    {{ number_format((int) $product->stock) }}
-                                </span>
-                            @endif
-                        </td>
-
-                        <td>
-                            {{ number_format((int) $product->minimum_stock) }}
-                        </td>
-
-                        <td>
-                            @if ((int) $product->stock <= (int) $product->minimum_stock)
-                                <span class="status-badge status-low">
-                                    Stok Menipis
-                                </span>
-                            @else
-                                <span class="status-badge status-normal">
-                                    Tersedia
-                                </span>
-                            @endif
-                        </td>
-
-                        <td>
-                            <div class="action-buttons">
-
-                                <a
-                                    href="{{ route('products.show', $product) }}"
-                                    class="btn"
-                                >
-                                    Detail
-                                </a>
-
-                                <a
-                                    href="{{ route('products.edit', $product) }}"
-                                    class="btn btn-edit"
-                                >
-                                    Edit
-                                </a>
-
-                                <form
-                                    action="{{ route('products.destroy', $product) }}"
-                                    method="POST"
-                                    onsubmit="return confirm('Yakin ingin menghapus produk ini?');"
-                                >
-                                    @csrf
-                                    @method('DELETE')
-
-                                    <button type="submit" class="btn btn-delete">
-                                        Hapus
-                                    </button>
-                                </form>
-
-                            </div>
-                        </td>
-                    </tr>
-
-                @empty
-                    <tr>
-                        <td colspan="9" class="empty-state">
-                            @if (request('search') || request('category_id'))
-                                Produk tidak ditemukan.
-                                Coba ubah kata pencarian atau kategori.
-                            @else
-                                Belum ada data produk.
-                                Klik tombol Tambah Produk untuk memulai.
-                            @endif
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-
-        {{-- Pagination --}}
-        @if ($products->hasPages())
-            <div class="pagination-wrapper">
-                <div class="pagination-info">
-                    Menampilkan {{ $products->firstItem() }}–{{ $products->lastItem() }}
-                    dari {{ $products->total() }} produk
-                </div>
-
-                {{ $products->links() }}
+    {{-- Ringkasan produk --}}
+    <div class="tm-summary">
+        <div class="tm-summary-card">
+            <div class="tm-summary-label">Total Produk</div>
+            <div class="tm-summary-number">
+                {{ number_format($products->total(), 0, ',', '.') }}
             </div>
-        @endif
+        </div>
 
+        <div class="tm-summary-card">
+            <div class="tm-summary-label">Produk dengan Stok Menipis</div>
+            <div class="tm-summary-number">
+                {{ \App\Models\Product::whereColumn('stock', '<=', 'minimum_stock')->count() }}
+            </div>
+        </div>
+
+        <div class="tm-summary-card">
+            <div class="tm-summary-label">Total Stok Seluruh Produk</div>
+            <div class="tm-summary-number">
+                {{ number_format(\App\Models\Product::sum('stock'), 0, ',', '.') }}
+            </div>
+        </div>
     </div>
 
+    {{-- Pencarian dan filter --}}
+    <form action="{{ route('products.index') }}"
+          method="GET"
+          class="tm-filters">
+
+        <input
+            type="search"
+            name="search"
+            placeholder="Cari nama produk atau SKU..."
+            value="{{ request('search') }}"
+            aria-label="Cari produk"
+        >
+
+        <select name="category_id" aria-label="Filter kategori">
+            <option value="">Semua Kategori</option>
+
+            @foreach ($categories as $category)
+                <option
+                    value="{{ $category->id }}"
+                    {{ (string) request('category_id') === (string) $category->id ? 'selected' : '' }}
+                >
+                    {{ $category->name }}
+                </option>
+            @endforeach
+        </select>
+
+        <button type="submit" class="tm-button tm-primary">
+            Cari / Filter
+        </button>
+
+        <a href="{{ route('products.index') }}"
+           class="tm-button tm-secondary">
+            Reset
+        </a>
+    </form>
+
+    {{-- Tabel produk --}}
+    <div class="tm-table-card">
+
+        <div class="tm-table-top">
+            <div>
+                <h2>Data Inventaris Produk</h2>
+                <p>Informasi produk yang tersimpan di Tasya Mart.</p>
+            </div>
+
+            <span class="tm-count">
+                {{ $products->count() }} data di halaman ini
+            </span>
+        </div>
+
+        <div class="tm-table-wrap">
+            <table class="tm-table">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>SKU</th>
+                        <th>Nama Produk</th>
+                        <th>Kategori</th>
+                        <th>Harga</th>
+                        <th>Stok</th>
+                        <th>Status Stok</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @forelse ($products as $product)
+                        <tr>
+                            <td>
+                                {{ $products->firstItem() + $loop->index }}
+                            </td>
+
+                            <td>
+                                <span class="tm-sku">
+                                    {{ $product->sku }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="tm-product-name">
+                                    {{ $product->name }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ $product->category?->name ?? 'Tanpa kategori' }}
+                            </td>
+
+                            <td>
+                                Rp {{ number_format((float) $product->price, 0, ',', '.') }}
+                            </td>
+
+                            <td>
+                                <strong>{{ number_format($product->stock, 0, ',', '.') }}</strong>
+                            </td>
+
+                            <td>
+                                @if ($product->stock <= $product->minimum_stock)
+                                    <span class="tm-badge tm-low-stock">
+                                        ⚠ Stok Menipis
+                                    </span>
+                                @else
+                                    <span class="tm-badge">
+                                        ✓ Stok Aman
+                                    </span>
+                                @endif
+                            </td>
+
+                            <td>
+                                <div class="tm-actions">
+                                    <a
+                                        href="{{ route('products.show', $product) }}"
+                                        class="tm-button tm-secondary"
+                                    >
+                                        Detail
+                                    </a>
+
+                                    <a
+                                        href="{{ route('products.edit', $product) }}"
+                                        class="tm-button tm-primary"
+                                    >
+                                        Edit
+                                    </a>
+
+                                    <form
+                                        action="{{ route('products.destroy', $product) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Yakin ingin menghapus produk {{ $product->name }}?')"
+                                    >
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit"
+                                                class="tm-button tm-danger">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="tm-empty">
+                                <strong>Belum ada produk ditemukan.</strong>
+                                <br>
+                                Coba ubah kata pencarian atau pilih kategori lain.
+                                <br><br>
+
+                                <a href="{{ route('products.create') }}"
+                                   class="tm-button tm-primary">
+                                    + Tambah Produk
+                                </a>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Informasi dan pagination --}}
+        <div class="tm-pagination">
+            <div class="tm-count">
+                @if ($products->total() > 0)
+                    Menampilkan {{ $products->firstItem() }}
+                    sampai {{ $products->lastItem() }}
+                    dari {{ $products->total() }} produk.
+                @else
+                    Belum ada data produk.
+                @endif
+            </div>
+
+            <div style="margin-top: 16px;">
+                {{ $products->withQueryString()->links() }}
+            </div>
+        </div>
+    </div>
 </div>
 @endsection

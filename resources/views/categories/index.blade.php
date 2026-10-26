@@ -1,171 +1,189 @@
-
 @extends('layouts.app')
 
-@section('content')
-<div class="container" style="padding-top:24px; padding-bottom:24px;">
+@section('title', 'Daftar Kategori - Tasya Mart')
 
+@section('content')
+<style>
+    .category-page {
+        color: #49372b;
+        padding: 24px;
+    }
+
+    .category-card {
+        background: #fffaf2;
+        border: 1px solid #eadcc8;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .category-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fffaf2;
+    }
+
+    .category-table th {
+        background: #eee3d1;
+        color: #49372b;
+        text-align: left;
+    }
+
+    .category-table th,
+    .category-table td {
+        padding: 12px;
+        border: 1px solid #eadcc8;
+    }
+
+    .category-btn {
+        display: inline-block;
+        padding: 9px 13px;
+        border-radius: 7px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .category-btn-primary {
+        background: #76513d;
+        color: white;
+    }
+
+    .category-btn-secondary {
+        background: #eee3d1;
+        color: #49372b;
+    }
+
+    .category-btn-danger {
+        background: #f5e0d9;
+        color: #963f2d;
+    }
+
+    .category-alert {
+        padding: 12px;
+        margin-bottom: 16px;
+        border-radius: 8px;
+    }
+
+    @media (max-width: 600px) {
+        .category-page {
+            padding: 12px;
+        }
+    }
+</style>
+
+<div class="category-page">
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:20px;">
         <div>
-            <h1>Daftar Produk TasyaShop</h1>
-            <p>Kelola produk, kategori, harga, dan stok.</p>
+            <h1 style="margin-bottom:6px;">Daftar Kategori</h1>
+            <p style="margin:0; color:#887665;">
+                Kelola kategori produk Tasya Mart.
+            </p>
         </div>
 
-        <a href="{{ route('products.create') }}"
-           style="background:#455a70; color:white; padding:10px 16px; border-radius:8px; text-decoration:none;">
-            + Tambah Produk
+        <a href="{{ route('categories.create') }}"
+           class="category-btn category-btn-primary">
+            + Tambah Kategori
         </a>
     </div>
 
     @if (session('success'))
-        <div style="padding:12px; margin-bottom:16px; background:#e7f7ed; color:#216e39; border-radius:8px;">
+        <div class="category-alert"
+             style="background:#e5f3e7; color:#28633a;">
             {{ session('success') }}
         </div>
     @endif
 
     @if (session('error'))
-        <div style="padding:12px; margin-bottom:16px; background:#fff0f0; color:#b42318; border-radius:8px;">
+        <div class="category-alert"
+             style="background:#f5e0d9; color:#963f2d;">
             {{ session('error') }}
         </div>
     @endif
 
     @if ($errors->any())
-        <div style="padding:12px; margin-bottom:16px; background:#fff0f0; color:#b42318; border-radius:8px;">
+        <div class="category-alert"
+             style="background:#f5e0d9; color:#963f2d;">
             @foreach ($errors->all() as $error)
                 <div>{{ $error }}</div>
             @endforeach
         </div>
     @endif
 
-    <form method="GET"
-          action="{{ route('products.index') }}"
-          style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
-
-        <input
-            type="text"
-            name="search"
-            value="{{ request('search') }}"
-            placeholder="Cari nama atau SKU produk..."
-            style="flex:1; min-width:200px; padding:10px; border:1px solid #cbd5e0; border-radius:8px;"
-        >
-
-        <select
-            name="category_id"
-            style="min-width:180px; padding:10px; border:1px solid #cbd5e0; border-radius:8px;">
-
-            <option value="">Semua Kategori</option>
-
-            @foreach ($categories as $category)
-                <option
-                    value="{{ $category->id }}"
-                    {{ (string) request('category_id') === (string) $category->id ? 'selected' : '' }}>
-                    {{ $category->name }}
-                </option>
-            @endforeach
-        </select>
-
-        <button type="submit"
-                style="padding:10px 16px; background:#455a70; color:white; border:0; border-radius:8px; cursor:pointer;">
-            Cari / Filter
-        </button>
-
-        <a href="{{ route('products.index') }}"
-           style="padding:10px 16px; background:#eaf0f5; color:#34465a; border-radius:8px; text-decoration:none;">
-            Reset
-        </a>
-    </form>
-
-    <div style="overflow-x:auto;">
-        <table style="width:100%; border-collapse:collapse; background:white;">
-            <thead>
-                <tr style="background:#edf2f7; text-align:left;">
-                    <th style="padding:12px; border:1px solid #dce4ec;">No.</th>
-                    <th style="padding:12px; border:1px solid #dce4ec;">SKU</th>
-                    <th style="padding:12px; border:1px solid #dce4ec;">Nama Produk</th>
-                    <th style="padding:12px; border:1px solid #dce4ec;">Kategori</th>
-                    <th style="padding:12px; border:1px solid #dce4ec;">Harga</th>
-                    <th style="padding:12px; border:1px solid #dce4ec;">Stok</th>
-                    <th style="padding:12px; border:1px solid #dce4ec;">Status</th>
-                    <th style="padding:12px; border:1px solid #dce4ec;">Aksi</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @forelse ($products as $product)
+    <div class="category-card">
+        <div style="overflow-x:auto;">
+            <table class="category-table">
+                <thead>
                     <tr>
-                        <td style="padding:12px; border:1px solid #dce4ec;">
-                            {{ $products->firstItem() + $loop->index }}
-                        </td>
-
-                        <td style="padding:12px; border:1px solid #dce4ec;">
-                            {{ $product->sku }}
-                        </td>
-
-                        <td style="padding:12px; border:1px solid #dce4ec;">
-                            {{ $product->name }}
-                        </td>
-
-                        <td style="padding:12px; border:1px solid #dce4ec;">
-                            {{ $product->category->name ?? '-' }}
-                        </td>
-
-                        <td style="padding:12px; border:1px solid #dce4ec;">
-                            Rp {{ number_format($product->price, 0, ',', '.') }}
-                        </td>
-
-                        <td style="padding:12px; border:1px solid #dce4ec;">
-                            {{ $product->stock }}
-                        </td>
-
-                        <td style="padding:12px; border:1px solid #dce4ec;">
-                            @if ($product->stock <= $product->minimum_stock)
-                                <span style="color:#b42318;">Stok Menipis</span>
-                            @else
-                                <span style="color:#216e39;">Stok Aman</span>
-                            @endif
-                        </td>
-
-                        <td style="padding:12px; border:1px solid #dce4ec; white-space:nowrap;">
-                            <a href="{{ route('products.show', $product->id) }}">Detail</a>
-                            |
-                            <a href="{{ route('products.edit', $product->id) }}">Edit</a>
-                            |
-                            <form
-                                action="{{ route('products.destroy', $product->id) }}"
-                                method="POST"
-                                style="display:inline;"
-                                onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
-
-                                @csrf
-                                @method('DELETE')
-
-                                <button type="submit"
-                                        style="background:none; border:none; color:#b42318; cursor:pointer;">
-                                    Hapus
-                                </button>
-                            </form>
-                        </td>
+                        <th style="width:70px;">No.</th>
+                        <th>Nama Kategori</th>
+                        <th style="width:150px;">Jumlah Produk</th>
+                        <th style="width:230px;">Aksi</th>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="8"
-                            style="padding:20px; text-align:center; border:1px solid #dce4ec;">
-                            Tidak ada produk yang ditemukan.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+
+                <tbody>
+                    @forelse ($categories as $category)
+                        <tr>
+                            <td>
+                                {{ $categories->firstItem() + $loop->index }}
+                            </td>
+
+                            <td>
+                                <strong>{{ $category->name }}</strong>
+                            </td>
+
+                            <td>
+                                {{ $category->products_count }} produk
+                            </td>
+
+                            <td style="white-space:nowrap;">
+                                <a href="{{ route('categories.show', $category->id) }}"
+                                   class="category-btn category-btn-secondary">
+                                    Detail
+                                </a>
+
+                                <a href="{{ route('categories.edit', $category->id) }}"
+                                   class="category-btn category-btn-primary">
+                                    Edit
+                                </a>
+
+                                <form action="{{ route('categories.destroy', $category->id) }}"
+                                      method="POST"
+                                      style="display:inline;"
+                                      onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="submit"
+                                            class="category-btn category-btn-danger">
+                                        Hapus
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" style="text-align:center; padding:24px;">
+                                Belum ada kategori. Klik tombol
+                                <strong>Tambah Kategori</strong> untuk membuat kategori pertama.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top:20px;">
+            <p>
+                Menampilkan {{ $categories->firstItem() ?? 0 }}
+                sampai {{ $categories->lastItem() ?? 0 }}
+                dari {{ $categories->total() }} kategori.
+            </p>
+
+            {{ $categories->links() }}
+        </div>
     </div>
-
-    <div style="margin-top:20px;">
-        <p>
-            Menampilkan {{ $products->firstItem() ?? 0 }}
-            sampai {{ $products->lastItem() ?? 0 }}
-            dari {{ $products->total() }} produk.
-        </p>
-
-        {{ $products->links() }}
-    </div>
-
 </div>
 @endsection
