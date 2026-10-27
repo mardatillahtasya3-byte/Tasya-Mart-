@@ -238,6 +238,10 @@
         <a href="{{ route('categories.index') }}" class="dashboard-btn dashboard-btn-secondary">
             Kelola Kategori
         </a>
+
+        <a href="{{ route('reports.index') }}" class="dashboard-btn">
+            Search / Report
+        </a>
     </div>
 
     <div class="dashboard-section">

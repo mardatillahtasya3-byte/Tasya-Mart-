@@ -378,6 +378,11 @@
                 Penjualan
             </a>
 
+            <a href="{{ route('reports.index') }}"
+               class="{{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                Search / Report
+            </a>
+
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="logout-button">
