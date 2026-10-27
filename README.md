@@ -1,72 +1,159 @@
-# Tasya Mart - Inventory & Sales Management System
+# Tasya Mart — Inventory Management System
 
-Aplikasi web manajemen inventaris dan penjualan terintegrasi yang dibangun menggunakan **Laravel** sebagai pemenuhan Ujian Tengah Semester (UTS) mata kuliah **Web Programming 2**. Sistem ini dirancang untuk memastikan konsistensi stok barang melalui transaksi pembelian (*purchasing*) dan penjualan (*sales*) yang atomik, serta dilengkapi dengan pembatasan hak akses berbasis peran (*Role-Based Access Control*).
+Aplikasi manajemen inventaris berbasis web yang dibangun menggunakan Laravel untuk membantu mengelola data produk, kategori, supplier, pembelian, penjualan, dan laporan stok barang.
 
----
+## ✨ Fitur
 
-## 📋 Daftar Isi
-1. [Project Overview](#project-overview)
-2. [Requirements](#requirements)
-3. [Fitur Utama](#fitur-utama)
-4. [Struktur Database & ERD](#struktur-database--erd)
-5. [Panduan Instalasi (Reproducible Setup)](#panduan-instalasi-reproducible-setup)
-6. [Environment Setup](#environment-setup)
-7. [Migration & Seeding](#migration--seeding)
-8. [Akun Demo (Demo Accounts)](#akun-demo-demo-accounts)
-9. [Known Limitations](#known-limitations)
+- **Dashboard** — Menampilkan ringkasan dan akses cepat ke fitur aplikasi.
+- **Manajemen Produk** — Mengelola data produk dan informasi stok.
+- **Manajemen Kategori** — Mengelola kategori produk.
+- **Manajemen Supplier** — Mengelola data pemasok barang.
+- **Pembelian** — Mencatat transaksi pembelian barang.
+- **Penjualan** — Mencatat transaksi penjualan barang.
+- **Search / Report** — Menampilkan dan mencari data laporan.
+- **Export CSV** — Mengekspor data laporan untuk digunakan di spreadsheet.
+- **Antarmuka** — Tampilan dengan tema warna cokelat dan krem.
 
----
+## 🛠️ Teknologi
 
-## 🔍 Project Overview
-Usaha distribusi sering menghadapi masalah ketidaksesuaian stok akibat pencatatan manual. Sistem ini dibangun untuk menyelesaikan masalah tersebut dengan aturan bisnis berikut:
-* **Konsistensi Stok:** Stok produk bertambah secara otomatis saat transaksi pembelian dikonfirmasi, dan berkurang saat transaksi penjualan berhasil.
-* **Pencegahan Overselling:** Sistem menolak penjualan jika kuantitas melebihi stok yang tersedia tanpa mengubah data apa pun.
-* **Atomic Transactions:** Memanfaatkan `DB::transaction` dan `lockForUpdate()` untuk memastikan data header, detail item, dan stok tersimpan secara bersamaan atau dibatalkan (*rollback*) jika terjadi kegagalan.
+- PHP
+- Laravel
+- MySQL
+- Blade Templates
+- HTML & CSS
+- Git & GitHub
 
----
+## 📋 Persyaratan
 
-## ⚙️ Requirements
-Pastikan perangkat Anda telah menginstal perangkat lunak berikut sebelum menjalankan aplikasi:
-* **PHP** >= 8.2 (Disarankan PHP 8.5)
-* **Composer**
-* **Node.js & NPM**
-* **MySQL / MariaDB**
+Pastikan perangkat sudah memiliki:
 
----
+- PHP dengan versi yang kompatibel dengan proyek Laravel.
+- Composer
+- MySQL atau MariaDB
+- Node.js dan npm jika proyek menggunakan aset frontend yang perlu dikompilasi.
 
-## 🚀 Fitur Utama
-* **Autentikasi & Otorisasi:** Sistem Login/Logout aman dengan hashing password, serta pembatasan hak akses server-side antara **Admin/Owner** dan **Staff**.
-* **Master Data Management:** 
-  * Manajemen Kategori Produk (Validasi nama unik).
-  * Manajemen Produk dengan SKU unik, harga beli/jual, stok, dan batas minimum stok.
-  * Manajemen Data Supplier / Pemasok.
-* **Transaksi Terintegrasi:**
-  * **Purchases (Pembelian):** Pencatatan stok masuk dari supplier.
-  * **Sales (Penjualan):** Pencatatan transaksi kasir/penjualan dengan validasi stok real-time.
-* **Usability & Report:**
-  * Dashboard interaktif dengan ringkasan total produk, nilai stok rendah, dan statistik transaksi.
-  * Fitur pencarian (*search*), filter kategori/tanggal, dan pagination yang mempertahankan parameter URL (*query string*).
+## 🚀 Cara Instalasi
 
----
+### 1. Clone repository
 
-## 📐 Struktur Database & ERD
-Relasi antar tabel dalam database menggunakan Eloquent ORM:
-* `users` (1-to-Many ke `sales` & `purchases`)
-* `categories` (1-to-Many ke `products`)
-* `products` (Many-to-One ke `categories`; 1-to-Many ke `sale_items` & `purchase_items`)
-* `suppliers` (1-to-Many ke `purchases`)
-* `purchases` (1-to-Many ke `purchase_items`)
-* `sales` (1-to-Many ke `sale_items`)
-
-*(Catatan: Diagram ERD final dapat diletakkan atau dirender pada bagian ini dalam repositori GitHub Anda).*
-
----
-
-## 🛠️ Panduan Instalasi (Reproducible Setup)
-
-Agar aplikasi dapat dijalankan dengan bersih pada *environment* baru, ikuti langkah-langkah di terminal berikut:
-
-### 1. Clone Repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/USERNAME/REPOSITORY.git
+```
+
+Ganti `USERNAME/REPOSITORY` dengan alamat repository GitHub milikmu.
+
+### 2. Masuk ke folder proyek
+
+```bash
 cd inventory-laravel
+```
+
+### 3. Instal dependensi
+
+```bash
+composer install
+```
+
+Jika proyek menggunakan dependensi frontend:
+
+```bash
+npm install
+```
+
+### 4. Konfigurasi environment
+
+Salin file `.env.example` menjadi `.env`.
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+### 5. Buat application key
+
+```bash
+php artisan key:generate
+```
+
+### 6. Buat database
+
+Buat database baru melalui MySQL atau phpMyAdmin, lalu sesuaikan pengaturan database di file `.env`:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=nama_database
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Sesuaikan nama database, username, dan password dengan konfigurasi lokalmu.
+
+### 7. Jalankan migration
+
+```bash
+php artisan migrate
+```
+
+**Catatan:** Jika aplikasi menggunakan database yang sudah berisi data, jangan menjalankan `php artisan migrate:fresh`, karena perintah tersebut dapat menghapus tabel beserta datanya.
+
+### 8. Jalankan aplikasi
+
+```bash
+php artisan serve
+```
+
+Buka alamat berikut di browser:
+
+```text
+http://127.0.0.1:8000
+```
+
+Jika diperlukan, jalankan proses frontend di terminal terpisah:
+
+```bash
+npm run dev
+```
+
+## 📊 Laporan
+
+Fitur Search / Report digunakan untuk membantu melihat data laporan terkait penjualan, pembelian, dan stok barang. Data laporan juga dapat diekspor ke format CSV sesuai dukungan aplikasi.
+
+## 📁 Struktur Proyek
+
+```text
+inventory-laravel/
+├── app/
+│   └── Http/
+│       └── Controllers/
+├── resources/
+│   └── views/
+│       ├── layouts/
+│       ├── dashboard/
+│       └── reports/
+├── routes/
+│   └── web.php
+├── database/
+├── public/
+├── .env.example
+└── README.md
+```
+
+## 🔐 Keamanan
+
+- Jangan mengunggah file `.env` ke repository publik.
+- Jangan membagikan password database atau kredensial pribadi.
+- Gunakan file `.env.example` untuk mendokumentasikan konfigurasi yang dibutuhkan.
+- Pastikan file cache, log, dan file konfigurasi lokal tidak ikut diunggah jika tidak diperlukan.
+
+## 👩‍💻 Pengembang
+
+**Tasya Mart — Inventory Management System**
+
+Dibuat sebagai proyek aplikasi inventaris berbasis Laravel.
+
+---
+
+*README ini dapat diperbarui sesuai perkembangan fitur dan konfigurasi proyek.*
